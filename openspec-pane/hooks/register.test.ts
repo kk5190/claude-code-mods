@@ -26,7 +26,7 @@ const measure = (usd: number) =>
 const ok = (stdout: string, exitCode = 0) =>
   ({ value: { exitCode, stdout, stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }) as never
 
-type Host = { list?: string | 'missing' | 'timeout' | 'broken'; listExit?: number; status?: string; statusExit?: number }
+type Host = { list?: string | 'missing' | 'timeout' | 'broken'; listExit?: number; status?: string; statusExit?: number; opsx?: string[] }
 
 // The engine's side: a fake openspec CLI, file system, store and prompt box.
 const stand = (on: On, host: Host = {}) => {
@@ -48,6 +48,11 @@ const stand = (on: On, host: Host = {}) => {
     return ok('')
   })
   on('fs.read', () => ({ value: TASKS_MD }) as never)
+  // The project's .claude/commands/opsx folder; absent unless a test sets it.
+  on('fs.list', (_$, e) => {
+    if (!host.opsx || !e.path?.endsWith('.claude/commands/opsx')) throw new Error('ENOENT: no such directory')
+    return { value: host.opsx.map(n => ({ name: `${n}.md`, kind: 'file', size: 1, mtimeMs: 0, isLink: false })) } as never
+  })
   on('prompt.fill', (_$, e) => (filled.push(e.text), { isFilled: true }) as never)
   on('prompt.submit', (_$, e) => ({ text: e.text }) as never)
   on('command.run', () => ({ text: '' }) as never)
@@ -66,6 +71,15 @@ test('/opsx-change brings the OpenSpec tab to the front', async ($, on) => {
   await $.command.run(command('opsx-change'))
   await $.command.run(command('opsx-change', 'refactor-header-nav'))
   expect(focused).toEqual(['openspec-pane', 'openspec-pane'])
+})
+
+test('steps the project has no command for get no button', async ($, on) => {
+  const done = JSON.parse(LIST)
+  done.changes[1].completedTasks = done.changes[1].totalTasks
+  stand(on, { list: JSON.stringify(done), opsx: ['explore', 'propose', 'apply', 'sync', 'archive'] })
+  const ui = await open($, 'terminal')
+  expect(await ui.find({ key: 'step-archive' })).toBeTruthy()
+  expect(await ui.find({ key: 'step-verify' })).toBeFalsy()
 })
 
 const open = async ($: Engine, surface: 'terminal' | 'desktop') => {

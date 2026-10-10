@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
 import type { ChangeDetail, Current, Ledger, Project } from '../types'
-import { firstUnchecked, nextSteps, parseList, parseStatus, pickActive } from './openspec'
+import { availableSteps, firstUnchecked, nextSteps, parseList, parseStatus, pickActive } from './openspec'
 import { addSpend, changeTotal, parseOpsx, usageTokens } from './spend'
 
 const PANE = 'openspec-pane'
@@ -37,6 +37,16 @@ const openspec = async ($: EngineInterface, args: string[]) => {
     if (/time(d)?[ -]?out/i.test(msg)) throw new Error('openspec timed out')
     if (/ENOENT|not found|no such file|cannot start|could not start/i.test(msg)) throw new Error(MISSING_CLI)
     throw new Error(`openspec failed: ${msg.split('\n')[0]}`)
+  }
+}
+
+// The `/opsx:` commands installed in the project; null when the folder is missing (e.g. skills-only setups).
+const installedCommands = async ($: EngineInterface, root: string): Promise<string[] | null> => {
+  try {
+    const entries = await $.fs.list(`${root}/.claude/commands/opsx`)
+    return entries.filter(e => e.name.endsWith('.md')).map(e => e.name.slice(0, -3))
+  } catch {
+    return null
   }
 }
 
@@ -84,7 +94,9 @@ const refresh = async ($: EngineInterface): Promise<Project | null> => {
       }
       const tasks = status.tasksPath ? await $.fs.read(status.tasksPath) : ''
       if (stale()) return read($, project)
-      next = { name, artifacts: status.artifacts, nextTask: firstUnchecked(String(tasks)) }
+      const commands = await installedCommands($, found.root)
+      if (stale()) return read($, project)
+      next = { name, artifacts: status.artifacts, nextTask: firstUnchecked(String(tasks)), commands }
     }
     await update($, detail, () => next)
     await update($, error, () => null)
@@ -247,7 +259,7 @@ export const register: Register = on => {
             )}
 
             <Box flexDirection="row" gap={1} marginTop={1}>
-              {nextSteps(change, d.artifacts).map(step => (
+              {availableSteps(nextSteps(change, d.artifacts), d.commands).map(step => (
                 <Button
                   key={`step-${step}`}
                   label={step[0]!.toUpperCase() + step.slice(1)}

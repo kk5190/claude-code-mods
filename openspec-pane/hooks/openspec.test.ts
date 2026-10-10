@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'claude-code/testing'
 
 import { LIST, LIST_NO_ROOT, ROOT, STATUS_FULL, STATUS_NO_TASKS, TASKS_MD } from './fixtures'
-import { firstUnchecked, nextSteps, parseList, parseStatus, pickActive } from './openspec'
+import { availableSteps, firstUnchecked, nextSteps, parseList, parseStatus, pickActive } from './openspec'
 
 const change = (over: Partial<{ completedTasks: number; totalTasks: number }>) => ({
   name: 'add-dark-mode-toggle', completedTasks: 6, totalTasks: 14, lastModified: '', status: 'in-progress', ...over,
@@ -52,5 +52,10 @@ describe('openspec', () => {
     expect(nextSteps(change({}), all(true))).toEqual(['apply'])
     expect(nextSteps(change({ completedTasks: 14 }), all(true))).toEqual(['verify', 'archive'])
     expect(nextSteps(change({ completedTasks: 0, totalTasks: 0 }), all(true))).toEqual(['verify', 'archive'])
+  })
+
+  test('availableSteps keeps only steps the project has commands for', () => {
+    expect(availableSteps(['verify', 'archive'], ['explore', 'propose', 'apply', 'sync', 'archive'])).toEqual(['archive'])
+    expect(availableSteps(['verify', 'archive'], null)).toEqual(['verify', 'archive'])
   })
 })

@@ -10,7 +10,8 @@ export type Project = { root: string; changes: ChangeSummary[] }
 
 export type Artifact = { id: string; present: boolean }
 
-export type ChangeDetail = { name: string; artifacts: Artifact[]; nextTask: string | null }
+/** `commands`: the `/opsx:` commands the project has installed, or null when unknown. */
+export type ChangeDetail = { name: string; artifacts: Artifact[]; nextTask: string | null; commands: string[] | null }
 
 export type Step = 'continue' | 'apply' | 'verify' | 'archive'
 

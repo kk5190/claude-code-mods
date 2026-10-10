@@ -34,3 +34,7 @@ export const nextSteps = (change: ChangeSummary, artifacts: Artifact[]): Step[] 
   if (change.completedTasks < change.totalTasks) return ['apply']
   return ['verify', 'archive']
 }
+
+/** The steps a project has `/opsx:` commands for; `null` (commands unknown) keeps every step. */
+export const availableSteps = (steps: Step[], commands: string[] | null): Step[] =>
+  commands === null ? steps : steps.filter(s => commands.includes(s))
