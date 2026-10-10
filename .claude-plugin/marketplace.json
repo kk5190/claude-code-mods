@@ -1,0 +1,19 @@
+{
+  "name": "claude-code-mods",
+  "description": "kk5190's mods for Claude Code",
+  "owner": {
+    "name": "kk5190"
+  },
+  "plugins": [
+    {
+      "name": "context-meter",
+      "source": "./context-meter",
+      "description": "Context size, fill bar, status and session cost in a side pane"
+    },
+    {
+      "name": "dev-servers",
+      "source": "./dev-servers",
+      "description": "Local dev servers in a side pane with Open, Restart and Kill"
+    }
+  ]
+}

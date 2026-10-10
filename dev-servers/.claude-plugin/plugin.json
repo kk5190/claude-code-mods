@@ -1,0 +1,12 @@
+{
+  "name": "dev-servers",
+  "version": "0.1.0",
+  "description": "Side pane listing local dev servers with Open, Restart and Kill",
+  "author": {
+    "name": "kk5190"
+  },
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "homepage": "https://github.com/kk5190/claude-code-mods/tree/main/dev-servers",
+  "repository": "https://github.com/kk5190/claude-code-mods"
+}

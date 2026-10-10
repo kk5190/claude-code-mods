@@ -1,0 +1,12 @@
+{
+  "name": "context-meter",
+  "version": "0.1.0",
+  "description": "Side-pane widget showing Claude Code context size, a fill bar, status and session cost, with a nudge to /compact or /clear",
+  "author": {
+    "name": "kk5190"
+  },
+  "homepage": "https://github.com/kk5190/claude-code-mods/tree/main/context-meter",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "repository": "https://github.com/kk5190/claude-code-mods"
+}
