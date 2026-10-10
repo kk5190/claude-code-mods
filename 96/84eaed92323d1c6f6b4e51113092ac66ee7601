@@ -1,0 +1,52 @@
+push-guard/hooks/register.tsx
+  s_5bf94060a3385f::t_919f3e0076f2a3 1-2
+  s_5bf94060a3385f::t_ca51f75abab5f9 3-33,35
+  s_5bf94060a3385f::t_d817aec2d480b7 34
+pr-status/hooks/register.tsx
+  s_5bf94060a3385f::t_7e83a012df30b2 1-56
+.claude-plugin/marketplace.json
+  s_5bf94060a3385f::t_63c3b828add01e 17-26
+push-guard/hooks/hooks.json
+  s_5bf94060a3385f::t_dde7baf6378468 1
+push-guard/hooks/guard.test.ts
+  s_5bf94060a3385f::t_61e43b60b33b55 1-45
+push-guard/hooks/guard.ts
+  s_5bf94060a3385f::t_2d0d35b20b363d 1-34
+pr-status/types/index.d.ts
+  s_5bf94060a3385f::t_b9d8f64e9071e3 1-12
+push-guard/README.md
+  s_5bf94060a3385f::t_40ef3429fe05d6 1-34
+pr-status/README.md
+  s_5bf94060a3385f::t_09228989050f98 1-37
+pr-status/hooks/status.test.ts
+  s_5bf94060a3385f::t_82753668400438 1-42
+push-guard/hooks/register.test.ts
+  s_5bf94060a3385f::t_2fef59d6b6bbcf 4,7,10-11,13
+  s_5bf94060a3385f::t_dfa759dcd16b3a 12
+  s_5bf94060a3385f::t_783392f2543dd1 1-3,5-6,8-9,14-16
+pr-status/hooks/status.ts
+  s_5bf94060a3385f::t_a0ab851f09b7a0 1-2,4-41
+  s_5bf94060a3385f::t_97dc6d9c0883d8 3
+push-guard/.claude-plugin/plugin.json
+  s_5bf94060a3385f::t_ee00ce610ba3eb 1-10
+pr-status/.claude-plugin/plugin.json
+  s_5bf94060a3385f::t_7c776361bd5272 1-11
+pr-status/hooks/hooks.json
+  s_5bf94060a3385f::t_529fa899bd1750 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9684eaed92323d1c6f6b4e51113092ac66ee7601",
+  "prompts": {},
+  "sessions": {
+    "s_5bf94060a3385f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11f2b5fb-c872-49bb-be11-089cc2c7c4cb",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "kk5190 <kk5190krrish@gmail.com>"
+    }
+  }
+}
