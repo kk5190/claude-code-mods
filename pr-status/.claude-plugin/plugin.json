@@ -1,0 +1,11 @@
+{
+  "name": "pr-status",
+  "version": "0.1.0",
+  "description": "Band above the prompt with the current branch PR, review state and CI checks",
+  "author": {
+    "name": "kk5190"
+  },
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "repository": "https://github.com/kk5190/claude-code-mods"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "push-guard",
+  "version": "0.1.0",
+  "description": "Blocks git push and gh pr create until you confirm the commits, their authors and the diff size, with a side pane of the last check",
+  "author": {
+    "name": "kk5190"
+  },
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "repository": "https://github.com/kk5190/claude-code-mods"
+}

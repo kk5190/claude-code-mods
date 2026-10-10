@@ -14,6 +14,16 @@
       "name": "dev-servers",
       "source": "./dev-servers",
       "description": "Local dev servers in a side pane with Open, Restart and Kill"
+    },
+    {
+      "name": "push-guard",
+      "source": "./push-guard",
+      "description": "Blocks git push and gh pr create until you confirm the commits, their authors and the diff size, with a side pane of the last check"
+    },
+    {
+      "name": "pr-status",
+      "source": "./pr-status",
+      "description": "Side pane with the current branch PR, review state and CI checks"
     }
   ]
 }
