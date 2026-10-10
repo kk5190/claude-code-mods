@@ -1,0 +1,61 @@
+README.md
+  s_5bf94060a3385f::t_37ac59aa66698c 9,18
+docs/specs/2026-10-10-openspec-pane-design.md
+  s_5bf94060a3385f::t_37ac59aa66698c 1-119
+dev-servers/hooks/register.test.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 19-21,23,39,89-93
+  s_5bf94060a3385f::t_21e52d81195773 94
+openspec-pane/hooks/fixtures.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 1-59
+context-meter/hooks/register.test.ts
+  s_5bf94060a3385f::t_47b4af4c4b6293 131
+  s_5bf94060a3385f::t_37ac59aa66698c 132-137
+  s_5bf94060a3385f::t_ea0bcc16146e08 138
+openspec-pane/hooks/hooks.json
+  s_5bf94060a3385f::t_37ac59aa66698c 1
+.claude-plugin/marketplace.json
+  s_5bf94060a3385f::t_145424f9c6e13b 27
+  s_5bf94060a3385f::t_37ac59aa66698c 28
+openspec-pane/hooks/spend.test.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 1-36
+openspec-pane/hooks/register.test.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 1-242
+openspec-pane/hooks/register.tsx
+  s_5bf94060a3385f::t_37ac59aa66698c 1-281
+.gitignore
+  s_5bf94060a3385f::t_37ac59aa66698c 5-7
+dev-servers/hooks/register.tsx
+  s_5bf94060a3385f::t_37ac59aa66698c 97
+openspec-pane/hooks/openspec.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 1-40
+context-meter/hooks/register.tsx
+  s_5bf94060a3385f::t_37ac59aa66698c 43
+openspec-pane/.claude-plugin/plugin.json
+  s_5bf94060a3385f::t_37ac59aa66698c 1-10
+openspec-pane/hooks/openspec.test.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 1-61
+openspec-pane/types/index.d.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 1-37
+openspec-pane/README.md
+  s_5bf94060a3385f::t_37ac59aa66698c 1-36
+docs/plans/2026-10-10-openspec-pane.md
+  s_5bf94060a3385f::t_37ac59aa66698c 1-914
+openspec-pane/hooks/spend.ts
+  s_5bf94060a3385f::t_37ac59aa66698c 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1d6ca566484581d9c88330cc17032d19adf80145",
+  "prompts": {},
+  "sessions": {
+    "s_5bf94060a3385f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11f2b5fb-c872-49bb-be11-089cc2c7c4cb",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "kk5190 <kk5190krrish@gmail.com>"
+    }
+  }
+}
