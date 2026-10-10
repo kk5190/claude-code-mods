@@ -1,0 +1,21 @@
+openspec-pane/hooks/register.test.ts
+  s_bf070631bae8cf::t_e7967a32aa5469 29,41,50,142-164
+openspec-pane/hooks/register.tsx
+  s_bf070631bae8cf::t_ed8e90ebcd657a 26-28,39-40,43,51,60,64,69-77,79,86,122-128,169-170,178,220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6f7a1bc751b0cbfb42445881764c4e2fe26642d0",
+  "prompts": {},
+  "sessions": {
+    "s_bf070631bae8cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58022ccc-517d-4171-b1f7-bf5600236959",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "kk5190 <kk5190krrish@gmail.com>"
+    }
+  }
+}
