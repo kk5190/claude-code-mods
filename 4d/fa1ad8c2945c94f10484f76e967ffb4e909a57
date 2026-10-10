@@ -1,0 +1,59 @@
+context-meter/hooks/hooks.json
+  s_bf070631bae8cf::t_af5ac34e58739d 1
+README.md
+  s_bf070631bae8cf::t_d9a551eea61ede 1-33
+dev-servers/types/index.d.ts
+  s_bf070631bae8cf::t_5d80ccf5710d63 1-16
+dev-servers/hooks/register.test.ts
+  s_bf070631bae8cf::t_7b5d280baf0c23 47,75
+  s_bf070631bae8cf::t_d4e11377528a03 1-46,48-74,76-84
+dev-servers/hooks/servers.ts
+  s_bf070631bae8cf::t_13ff5d03f6d74a 1-93
+dev-servers/hooks/register.tsx
+  s_bf070631bae8cf::t_f8c3a818ead3b4 1-140
+dev-servers/hooks/hooks.json
+  s_bf070631bae8cf::t_757cb587262435 1
+.gitignore
+  s_bf070631bae8cf::t_651af8a4a1c623 1-4
+dev-servers/hooks/fixtures.ts
+  s_bf070631bae8cf::t_23c43f0da084d2 1-9,12
+  s_bf070631bae8cf::t_3bebeaeed6003d 10-11,13
+dev-servers/README.md
+  s_bf070631bae8cf::t_d969a1dfb27665 7
+  s_bf070631bae8cf::t_a2551c8fb1733e 1-6,8-35
+context-meter/README.md
+  s_bf070631bae8cf::t_6dfdba43db56e4 1-57
+.claude-plugin/marketplace.json
+  s_bf070631bae8cf::t_f0fd6bb48145fa 1-19
+dev-servers/hooks/servers.test.ts
+  s_bf070631bae8cf::t_28f2899a110730 15,27,29,34-35
+  s_bf070631bae8cf::t_16c154d7f2bbe5 1-14,16-26,28,30-33,36-38
+context-meter/.claude-plugin/plugin.json
+  s_bf070631bae8cf::t_518da2c0a9b9ba 1-12
+context-meter/types/index.d.ts
+  s_bf070631bae8cf::t_f4d42d8ab80e09 1-7
+context-meter/hooks/register.tsx
+  s_bf070631bae8cf::t_8e2bb72e6d406b 1-98
+dev-servers/.claude-plugin/plugin.json
+  s_bf070631bae8cf::t_7efc7f44bc6c57 1-12
+context-meter/hooks/register.test.ts
+  s_bf070631bae8cf::t_c5b4366b9de0d9 1-62
+LICENSE
+  s_bf070631bae8cf::t_17523682988867 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4dfa1ad8c2945c94f10484f76e967ffb4e909a57",
+  "prompts": {},
+  "sessions": {
+    "s_bf070631bae8cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58022ccc-517d-4171-b1f7-bf5600236959",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "kk5190 <kk5190krrish@gmail.com>"
+    }
+  }
+}
