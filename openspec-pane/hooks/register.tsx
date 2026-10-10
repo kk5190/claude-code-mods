@@ -8,6 +8,8 @@ import { addSpend, changeTotal, parseOpsx, usageTokens } from './spend'
 const PANE = 'openspec-pane'
 const TITLE = 'OpenSpec'
 const POLL_MS = 10_000
+const CLI_TIMEOUT_MS = 5000
+const WRITING_TOOLS = ['Write', 'Edit', 'MultiEdit', 'NotebookEdit']
 const MISSING_CLI = 'openspec CLI not found — npm i -g @fission-ai/openspec'
 
 const project = atom({ plugin: 'openspec-pane', key: 'project' } as const, null)
@@ -29,9 +31,12 @@ let poll: { cancel: () => void } | null = null
 
 const openspec = async ($: EngineInterface, args: string[]) => {
   try {
-    return await $.process.run(['openspec', ...args])
-  } catch {
-    throw new Error(MISSING_CLI)
+    return await $.process.run(['openspec', ...args], { timeoutMs: CLI_TIMEOUT_MS })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    if (/time(d)?[ -]?out/i.test(msg)) throw new Error('openspec timed out')
+    if (/ENOENT|not found|no such file|cannot start|could not start/i.test(msg)) throw new Error(MISSING_CLI)
+    throw new Error(`openspec failed: ${msg.split('\n')[0]}`)
   }
 }
 
@@ -59,6 +64,8 @@ const refresh = async ($: EngineInterface): Promise<Project | null> => {
       const saved = ((await $.store.get(`ledger:${found.root}`)) as Ledger | undefined) ?? {}
       if (stale()) return read($, project)
       await update($, ledger, () => saved)
+      // A step from another project must not keep spending here.
+      await update($, current, () => null)
     }
     const chosen = ((await $.store.get(`active:${found.root}`)) as string | undefined) ?? null
     if (stale()) return read($, project)
@@ -111,19 +118,25 @@ const spend = async ($: EngineInterface, add: { tokens?: number; usd?: number })
   const cur = await read($, current)
   const p = await read($, project)
   if (!cur || !p) return
-  const next = await update($, ledger, l => addSpend(l, cur, add))
+  // The store is shared by every session in this project: add to what it holds now, not to our copy.
+  const stored = ((await $.store.get(`ledger:${p.root}`)) as Ledger | undefined) ?? {}
+  const next = addSpend(stored, cur, add)
   await $.store.set(`ledger:${p.root}`, next)
+  await update($, ledger, () => next)
 }
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'opsx-change', description: 'Show the OpenSpec pane, or switch the active change' })
-    if (await refresh($)) void $.ui.open({ id: PANE, title: TITLE })
+    void refresh($)
+      .then(p => p && $.ui.open({ id: PANE, title: TITLE }))
+      .catch(() => {})
     poll?.cancel()
-    // Poll while a project is known or the last refresh failed; a repo with no OpenSpec stays quiet.
+    // Poll while the pane is placed and a project is known or the last refresh failed; a repo with no OpenSpec stays quiet.
     poll = $.clock.every(POLL_MS, () => {
       void (async () => {
-        if ((await read($, project)) || (await read($, error)) !== null) await refresh($)
+        const placed = (await $.ui.panes()).some(pane => pane.id === PANE && pane.isPlaced)
+        if (placed && ((await read($, project)) || (await read($, error)) !== null)) await refresh($)
       })().catch(() => {})
     })
     return next(e)
@@ -131,7 +144,12 @@ export const register: Register = on => {
 
   on('command.run', { command: 'opsx-change' }, async ($, e) => {
     const p = await refresh($)
-    if (!p) return { text: 'No OpenSpec project here' }
+    if (!p) {
+      const problem = await read($, error)
+      if (problem === null) return { text: 'No OpenSpec project here' }
+      await $.ui.open({ id: PANE, title: TITLE })
+      return { text: problem }
+    }
     const name = e.args.trim()
     if (name && !(await choose($, name))) return { text: `No change named ${name}` }
     if (!name) await update($, showOthers, () => true)
@@ -166,8 +184,11 @@ export const register: Register = on => {
 
   on('session.end', async ($, e, next) => {
     await update($, current, () => null)
-    poll?.cancel()
-    poll = null
+    // /clear and a resume end the session without a session.start after: keep polling for those.
+    if (e.reason !== 'clear' && e.reason !== 'resume') {
+      poll?.cancel()
+      poll = null
+    }
     lastUsd = null
     return next(e)
   })
@@ -175,7 +196,7 @@ export const register: Register = on => {
   on('tool.call', async ($, e, next) => {
     const ran = await next(e)
     const path = (e as { file_path?: unknown }).file_path
-    if (typeof path === 'string' && /(^|\/)openspec\//.test(path)) refresh($).catch(() => {})
+    if (WRITING_TOOLS.includes(e.tool) && typeof path === 'string' && /(^|\/)openspec\//.test(path)) refresh($).catch(() => {})
     return ran
   })
 
@@ -194,7 +215,7 @@ export const register: Register = on => {
     const others = (p?.changes ?? []).filter(c => c.status !== 'complete' && c.name !== d?.name)
     const steps = spent[d?.name ?? ''] ?? {}
     const total = changeTotal(steps)
-    const filled = change && change.totalTasks > 0 ? Math.round((change.completedTasks / change.totalTasks) * width) : 0
+    const filled = change && change.totalTasks > 0 ? Math.min(width, Math.max(0, Math.round((change.completedTasks / change.totalTasks) * width))) : 0
     const row = (label: string, s: { tokens: number; usd: number }) =>
       `${label.padEnd(11)}${`${k(s.tokens)} tok`.padStart(10)}${`$${s.usd.toFixed(2)}`.padStart(9)}`
 
