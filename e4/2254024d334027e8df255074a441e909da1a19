@@ -1,0 +1,41 @@
+context-meter/types/index.d.ts
+  s_5bf94060a3385f::t_6fe44853d6ee00 1,5-11
+context-meter/hooks/cost.ts
+  s_5bf94060a3385f::t_95e308979f1645 1-12
+  s_5bf94060a3385f::t_f1b65284d95b2a 13-19
+context-meter/hooks/register.tsx
+  s_5bf94060a3385f::t_8d51197b29702d 76
+  s_5bf94060a3385f::t_5f48abe538fc96 124
+  s_5bf94060a3385f::t_ec368bd7b10484 118-123
+  s_5bf94060a3385f::t_0d24850b543849 50-51,53,63-75,77-79
+  s_5bf94060a3385f::t_6c3d303c0c670c 5
+  s_5bf94060a3385f::t_b72108adb4999b 11-15,21-23
+  s_5bf94060a3385f::t_c46bec22fbac9f 80
+context-meter/hooks/cost.test.ts
+  s_5bf94060a3385f::t_23264d7dd9568d 2
+  s_5bf94060a3385f::t_f01f7936f50fe5 32-43
+  s_5bf94060a3385f::t_51fc2100787b6b 1,3-31
+context-meter/hooks/register.test.ts
+  s_5bf94060a3385f::t_bbb5f97065f00c 107-130
+  s_5bf94060a3385f::t_dba86cac935895 63-106
+docs/superpowers/plans/2026-10-10-context-meter-cost-guardian.md
+  s_5bf94060a3385f::t_ab127098787944 1-418
+docs/superpowers/specs/2026-10-10-context-meter-cost-guardian-design.md
+  s_5bf94060a3385f::t_e81a4e5b872b69 1-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e42254024d334027e8df255074a441e909da1a19",
+  "prompts": {},
+  "sessions": {
+    "s_5bf94060a3385f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11f2b5fb-c872-49bb-be11-089cc2c7c4cb",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "kk5190 <kk5190krrish@gmail.com>"
+    }
+  }
+}
