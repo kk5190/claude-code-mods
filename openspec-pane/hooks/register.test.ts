@@ -32,6 +32,7 @@ type Host = { list?: string | 'missing' | 'timeout' | 'broken'; listExit?: numbe
 const stand = (on: On, host: Host = {}) => {
   const filled: string[] = []
   const opened: string[] = []
+  const focused: string[] = []
   const store = new Map<string, unknown>()
   on('store.get', (_$, e) => ({ value: store.get(e.key) }) as never)
   on('store.set', (_$, e) => (store.set(e.key, e.value), { value: undefined }) as never)
@@ -56,9 +57,16 @@ const stand = (on: On, host: Host = {}) => {
   on('session.start', () => ({ cwd: '/home/dev/shop-web' }) as never)
   on('command.register', () => ({ value: undefined }) as never)
   on('session.end', () => ({ sessionId: 's1' }) as never)
-  on('ui.open', (_$, e) => (opened.push(e.id), { value: { isPlaced: true } }) as never)
-  return { filled, opened, store }
+  on('ui.open', (_$, e) => (opened.push(e.id), e.focus && focused.push(e.id), { value: { isPlaced: true } }) as never)
+  return { filled, opened, focused, store }
 }
+
+test('/opsx-change brings the OpenSpec tab to the front', async ($, on) => {
+  const { focused } = stand(on)
+  await $.command.run(command('opsx-change'))
+  await $.command.run(command('opsx-change', 'refactor-header-nav'))
+  expect(focused).toEqual(['openspec-pane', 'openspec-pane'])
+})
 
 const open = async ($: Engine, surface: 'terminal' | 'desktop') => {
   await $.command.run(command('opsx-change'))

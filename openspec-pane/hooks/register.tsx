@@ -147,13 +147,13 @@ export const register: Register = on => {
     if (!p) {
       const problem = await read($, error)
       if (problem === null) return { text: 'No OpenSpec project here' }
-      await $.ui.open({ id: PANE, title: TITLE })
+      await $.ui.open({ id: PANE, title: TITLE, focus: true })
       return { text: problem }
     }
     const name = e.args.trim()
     if (name && !(await choose($, name))) return { text: `No change named ${name}` }
     if (!name) await update($, showOthers, () => true)
-    await $.ui.open({ id: PANE, title: TITLE })
+    await $.ui.open({ id: PANE, title: TITLE, focus: true })
     return { text: name ? `Active change: ${name}` : 'OpenSpec pane opened.' }
   })
 
