@@ -26,7 +26,7 @@ const measure = (usd: number) =>
 const ok = (stdout: string, exitCode = 0) =>
   ({ value: { exitCode, stdout, stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }) as never
 
-type Host = { list?: string | 'missing'; listExit?: number }
+type Host = { list?: string | 'missing'; listExit?: number; status?: string; statusExit?: number }
 
 // The engine's side: a fake openspec CLI, file system, store and prompt box.
 const stand = (on: On, host: Host = {}) => {
@@ -38,7 +38,7 @@ const stand = (on: On, host: Host = {}) => {
     const list = host.list ?? LIST
     if (list === 'missing') throw new Error('spawn openspec ENOENT')
     if (e.argv[1] === 'list') return ok(list, host.listExit ?? 0)
-    if (e.argv[1] === 'status') return ok(STATUS_FULL)
+    if (e.argv[1] === 'status') return ok(host.status ?? STATUS_FULL, host.statusExit ?? 0)
     return ok('')
   })
   on('fs.read', () => ({ value: TASKS_MD }) as never)
@@ -47,6 +47,7 @@ const stand = (on: On, host: Host = {}) => {
   on('command.run', () => ({ text: '' }) as never)
   on('turn.complete', () => ({ text: '' }) as never)
   on('session.measure', () => ({ changed: ['cost'] }) as never)
+  on('tool.call', () => ({ result: 'ok', text: 'ok' }) as never)
   on('session.end', () => ({ sessionId: 's1' }) as never)
   on('ui.open', () => ({ value: { isPlaced: true } }) as never)
   return { filled }
@@ -137,4 +138,27 @@ test('no OpenSpec root: /opsx-change says so', async ($, on) => {
   stand(on, { list: LIST_NO_ROOT, listExit: 1 })
   const reply = await $.command.run(command('opsx-change'))
   expect((reply as { text: string }).text).toBe('No OpenSpec project here')
+})
+
+test('a failing openspec status shows the error', async ($, on) => {
+  stand(on, { status: 'boom', statusExit: 1 })
+  const ui = await open($, 'terminal')
+  expect(await ui.find({ type: 'Text', text: /openspec status failed/ })).toBeTruthy()
+})
+
+test('garbage status output shows the error', async ($, on) => {
+  stand(on, { status: 'not json' })
+  const ui = await open($, 'terminal')
+  expect(await ui.find({ type: 'Text', text: /openspec status failed/ })).toBeTruthy()
+})
+
+test('a tool call on a relative openspec path refreshes the pane', async ($, on) => {
+  const host: Host = {}
+  const clock = mock.clock(on)
+  stand(on, host)
+  const ui = await open($, 'terminal')
+  host.list = LIST.replace('"completedTasks":6', '"completedTasks":9')
+  await $.tool.call({ tool: 'Read', file_path: 'openspec/changes/add-dark-mode-toggle/tasks.md' } as never)
+  await clock.settle()
+  expect(await ui.find({ type: 'Text', text: /9\/14 tasks/ })).toBeTruthy()
 })

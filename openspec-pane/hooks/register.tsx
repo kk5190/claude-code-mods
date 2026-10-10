@@ -23,6 +23,9 @@ const k = (n: number) => (n >= 1_000_000 ? `${+(n / 1_000_000).toFixed(1)}M` : `
 // Cost is a session running total; a reload starts this over so its first reading only sets the baseline.
 let lastUsd: number | null = null
 
+// Each refresh takes a number; an older, slower run stops writing once a newer one has started.
+let generation = 0
+let poll: { cancel: () => void } | null = null
 
 const openspec = async ($: EngineInterface, args: string[]) => {
   try {
@@ -33,8 +36,11 @@ const openspec = async ($: EngineInterface, args: string[]) => {
 }
 
 const refresh = async ($: EngineInterface): Promise<Project | null> => {
+  const gen = ++generation
+  const stale = () => gen !== generation
   try {
     const listed = await openspec($, ['list', '--json'])
+    if (stale()) return read($, project)
     let found: Project | null
     try {
       found = parseList(listed.stdout)
@@ -42,6 +48,7 @@ const refresh = async ($: EngineInterface): Promise<Project | null> => {
       throw new Error(`openspec list failed: ${(listed.stderr || listed.stdout).split('\n')[0]}`)
     }
     const before = await read($, project)
+    if (stale()) return read($, project)
     await update($, project, () => found)
     if (found === null) {
       await update($, detail, () => null)
@@ -50,21 +57,33 @@ const refresh = async ($: EngineInterface): Promise<Project | null> => {
     }
     if (before?.root !== found.root) {
       const saved = ((await $.store.get(`ledger:${found.root}`)) as Ledger | undefined) ?? {}
+      if (stale()) return read($, project)
       await update($, ledger, () => saved)
     }
     const chosen = ((await $.store.get(`active:${found.root}`)) as string | undefined) ?? null
+    if (stale()) return read($, project)
     const name = pickActive(found.changes, chosen)
     await update($, active, () => name)
     let next: ChangeDetail | null = null
     if (name !== null) {
-      const status = parseStatus((await openspec($, ['status', '--change', name, '--json'])).stdout)
+      const ran = await openspec($, ['status', '--change', name, '--json'])
+      if (stale()) return read($, project)
+      let status: ReturnType<typeof parseStatus>
+      try {
+        if (ran.exitCode !== 0) throw new Error('non-zero exit')
+        status = parseStatus(ran.stdout)
+      } catch {
+        throw new Error(`openspec status failed: ${(ran.stderr || ran.stdout).split('\n')[0]}`)
+      }
       const tasks = status.tasksPath ? await $.fs.read(status.tasksPath) : ''
+      if (stale()) return read($, project)
       next = { name, artifacts: status.artifacts, nextTask: firstUnchecked(String(tasks)) }
     }
     await update($, detail, () => next)
     await update($, error, () => null)
     return found
   } catch (err) {
+    if (stale()) return read($, project)
     await update($, error, () => (err instanceof Error ? err.message : String(err)))
     return read($, project)
   }
@@ -100,7 +119,13 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'opsx-change', description: 'Show the OpenSpec pane, or switch the active change' })
     if (await refresh($)) void $.ui.open({ id: PANE, title: TITLE })
-    $.clock.every(POLL_MS, () => void read($, project).then(p => p && refresh($)))
+    poll?.cancel()
+    // Poll while a project is known or the last refresh failed; a repo with no OpenSpec stays quiet.
+    poll = $.clock.every(POLL_MS, () => {
+      void (async () => {
+        if ((await read($, project)) || (await read($, error)) !== null) await refresh($)
+      })().catch(() => {})
+    })
     return next(e)
   })
 
@@ -141,6 +166,8 @@ export const register: Register = on => {
 
   on('session.end', async ($, e, next) => {
     await update($, current, () => null)
+    poll?.cancel()
+    poll = null
     lastUsd = null
     return next(e)
   })
@@ -148,7 +175,7 @@ export const register: Register = on => {
   on('tool.call', async ($, e, next) => {
     const ran = await next(e)
     const path = (e as { file_path?: unknown }).file_path
-    if (typeof path === 'string' && path.includes('/openspec/')) void refresh($)
+    if (typeof path === 'string' && /(^|\/)openspec\//.test(path)) refresh($).catch(() => {})
     return ran
   })
 
@@ -190,7 +217,7 @@ export const register: Register = on => {
               <Box flexDirection="column" marginTop={1}>
                 <Text dimColor>Spend on this change</Text>
                 {Object.entries(steps).map(([step, s]) => (
-                  <Text color={cur?.change === d.name && cur.step === step ? 'claude' : undefined}>
+                  <Text key={`spend-${step}`} color={cur?.change === d.name && cur.step === step ? 'claude' : undefined}>
                     {row(cur?.change === d.name && cur.step === step ? `${step} ▸` : step, s)}
                   </Text>
                 ))}
