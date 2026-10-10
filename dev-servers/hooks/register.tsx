@@ -94,7 +94,7 @@ export const register: Register = on => {
 
   on('command.run', { command: 'dev-servers' }, async $ => {
     await scan($)
-    await $.ui.open({ id: PANE, title: TITLE })
+    await $.ui.open({ id: PANE, title: TITLE, focus: true })
 
     return { text: 'Dev servers opened.' }
   })

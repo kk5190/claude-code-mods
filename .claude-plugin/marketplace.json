@@ -24,6 +24,7 @@
       "name": "pr-status",
       "source": "./pr-status",
       "description": "Side pane with the current branch PR, review state and CI checks"
-    }
+    },
+    { "name": "openspec-pane", "source": "./openspec-pane", "description": "OpenSpec active change, task progress, spend per OPSX step and next-step buttons in a side pane" }
   ]
 }

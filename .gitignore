@@ -2,3 +2,6 @@
 **/.claude-plugin/types/
 **/tsconfig.json
 .DS_Store
+
+# Local agent workspace
+.superpowers/

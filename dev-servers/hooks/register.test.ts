@@ -16,7 +16,11 @@ const COMMAND = {
 } as never
 
 // The engine's side: a fake host whose processes die on SIGTERM.
+// Panes opened with focus (brought to the front), per test.
+let focused: string[] = []
+
 const stand = (on: On, { listening = LSOF } = {}) => {
+  focused = []
   const ran: string[] = []
   const dead = new Set<string>()
   on('process.run', (_$, e) => ({ value: answer(e.argv) }) as never)
@@ -32,7 +36,7 @@ const stand = (on: On, { listening = LSOF } = {}) => {
     if (cmd.startsWith('kill -0')) return { ...ok(), exitCode: dead.has(e.argv[2]!) ? 1 : 0 }
     return ok()
   }
-  on('ui.open', () => ({ value: { isPlaced: true } }) as never)
+  on('ui.open', (_$, e) => (e.focus && focused.push(e.id), { value: { isPlaced: true } }) as never)
   on('ui.toast', () => ({ value: undefined }) as never)
   on('clock.sleep', () => ({ value: undefined }) as never)
   return ran
@@ -81,4 +85,10 @@ test('shows an empty state when nothing listens', async ($, on) => {
   await $.command.run(COMMAND)
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' } as never)
   expect(await ui.find({ type: 'Text', text: 'No dev servers running.' })).toBeTruthy()
+})
+
+test('/dev-servers brings its tab to the front', async ($, on) => {
+  stand(on)
+  await $.command.run(COMMAND)
+  expect(focused).toEqual(['dev-servers'])
 })
