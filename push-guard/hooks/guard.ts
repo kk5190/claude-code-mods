@@ -1,5 +1,7 @@
 // Pure logic for the push guard. No engine imports, so it runs under plain tests.
 
+import type { Check, Outcome } from '../types'
+
 export type Commit = { name: string; email: string; subject: string }
 
 // The author the guard expects on every commit about to be published.
@@ -31,4 +33,22 @@ export const summarize = (commits: Commit[], shortstat: string): string => {
   const count = `${commits.length} commit${commits.length === 1 ? '' : 's'}`
   const lines = commits.map(c => `  ${c.subject}`)
   return [count, ...lines, shortstat.trim()].filter(Boolean).join('\n')
+}
+
+const OUTCOME: Record<Outcome, string> = {
+  checking: 'waiting for your answer',
+  continued: 'continued',
+  cancelled: 'cancelled',
+  refused: 'refused, the command did not run',
+}
+
+// The pane's lines for the last check, one string per row.
+export const paneLines = (check: Check | null): string[] => {
+  if (check === null) return ['No publish command checked yet.']
+  return [
+    `Command: ${check.command}`,
+    ...check.lines,
+    ...check.warnings.map(w => `Author check failed: ${w}`),
+    `Outcome: ${OUTCOME[check.outcome]}`,
+  ]
 }

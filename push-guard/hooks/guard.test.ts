@@ -1,5 +1,5 @@
 import { expect, test } from 'claude-code/testing'
-import { authorWarnings, isPublishCommand, parseCommits, summarize } from './guard'
+import { authorWarnings, isPublishCommand, paneLines, parseCommits, summarize } from './guard'
 
 test('git push and gh pr create are publish commands', () => {
   expect(isPublishCommand('git push origin main')).toBe(true)
@@ -42,4 +42,31 @@ test('summary lists each commit and the shortstat', () => {
   expect(text).toContain('1 commit')
   expect(text).toContain('Add guard')
   expect(text).toContain('3 files changed')
+})
+
+test('the pane says so before any publish command has been checked', () => {
+  expect(paneLines(null)).toEqual(['No publish command checked yet.'])
+})
+
+test('the pane shows the command, the commits, any author warning and the outcome', () => {
+  const lines = paneLines({
+    command: 'git push origin main',
+    lines: ['1 commit', '  Add guard'],
+    warnings: ['Someone <x@y.z>: stray'],
+    outcome: 'checking',
+  })
+  expect(lines).toEqual([
+    'Command: git push origin main',
+    '1 commit',
+    '  Add guard',
+    'Author check failed: Someone <x@y.z>: stray',
+    'Outcome: waiting for your answer',
+  ])
+})
+
+test('each outcome has its own wording in the pane', () => {
+  const base = { command: 'git push', lines: [], warnings: [] }
+  expect(paneLines({ ...base, outcome: 'continued' }).at(-1)).toBe('Outcome: continued')
+  expect(paneLines({ ...base, outcome: 'cancelled' }).at(-1)).toBe('Outcome: cancelled')
+  expect(paneLines({ ...base, outcome: 'refused' }).at(-1)).toBe('Outcome: refused, the command did not run')
 })

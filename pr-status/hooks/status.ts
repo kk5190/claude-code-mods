@@ -1,4 +1,4 @@
-// Pure logic for the PR status band. No engine imports, so it runs under plain tests.
+// Pure logic for the PR status pane. No engine imports, so it runs under plain tests.
 
 import type { Checks, PrStatus } from '../types'
 
@@ -33,9 +33,17 @@ export const countChecks = (json: string): Checks => {
 export const classifyFailure = (stderr: string): 'none' | 'unavailable' =>
   stderr.includes('no pull requests found') ? 'none' : 'unavailable'
 
-export const bandText = (status: PrStatus): string => {
-  if (status.kind === 'none') return 'no PR for this branch'
-  if (status.kind === 'unavailable') return 'PR status unavailable'
+export type Row = { label: string; value: string }
+
+// One label and value per line of the pane. `null` means the first check has not finished.
+export const paneRows = (status: PrStatus | null): Row[] => {
+  if (status === null) return [{ label: 'PR', value: 'checking…' }]
+  if (status.kind === 'none') return [{ label: 'PR', value: 'no PR for this branch' }]
+  if (status.kind === 'unavailable') return [{ label: 'PR', value: 'PR status unavailable' }]
   const { passing, failing, pending } = status.checks
-  return `#${status.number} ${status.title} · ${status.review} · checks: ${passing} passing, ${failing} failing, ${pending} pending`
+  return [
+    { label: 'PR', value: `#${status.number} ${status.title}` },
+    { label: 'Review', value: status.review },
+    { label: 'Checks', value: `${passing} passing, ${failing} failing, ${pending} pending` },
+  ]
 }

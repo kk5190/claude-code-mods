@@ -18,12 +18,12 @@
     {
       "name": "push-guard",
       "source": "./push-guard",
-      "description": "Blocks git push and gh pr create until you confirm the commits, their authors and the diff size"
+      "description": "Blocks git push and gh pr create until you confirm the commits, their authors and the diff size, with a side pane of the last check"
     },
     {
       "name": "pr-status",
       "source": "./pr-status",
-      "description": "Band above the prompt with the current branch PR, review state and CI checks"
+      "description": "Side pane with the current branch PR, review state and CI checks"
     }
   ]
 }

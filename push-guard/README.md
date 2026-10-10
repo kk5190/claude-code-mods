@@ -10,6 +10,8 @@ When Claude runs one of those commands, a dialog shows:
 
 Choose **Continue** to run it, or **Cancel** to refuse. If nobody answers, the command is refused.
 
+The side pane shows the last check: the command, the commits, any author warning, and the outcome (waiting, continued, cancelled, or refused). It opens when a session starts. Reopen it with `/push-guard`.
+
 ## Limits
 
 - It matches on the command text. A push hidden behind an alias, a script, or a sub-shell won't be caught.

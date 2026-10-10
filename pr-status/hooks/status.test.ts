@@ -1,5 +1,5 @@
 import { expect, test } from 'claude-code/testing'
-import { bandText, countChecks, parsePr, classifyFailure } from './status'
+import { classifyFailure, countChecks, paneRows, parsePr } from './status'
 
 test('parses the number, title and review decision from gh pr view', () => {
   const json = '{"number":12,"title":"Add guard","reviewDecision":"APPROVED"}'
@@ -25,18 +25,26 @@ test('a branch without a PR is none; any other failure is unavailable', () => {
   expect(classifyFailure('gh: command not found')).toBe('unavailable')
 })
 
-test('the band names the PR, its review and the checks', () => {
-  const text = bandText({
+test('the pane lists the PR, its review and the checks, one row each', () => {
+  const rows = paneRows({
     kind: 'pr',
     number: 12,
     title: 'Add guard',
     review: 'approved',
     checks: { passing: 2, failing: 1, pending: 0 },
   })
-  expect(text).toBe('#12 Add guard · approved · checks: 2 passing, 1 failing, 0 pending')
+  expect(rows).toEqual([
+    { label: 'PR', value: '#12 Add guard' },
+    { label: 'Review', value: 'approved' },
+    { label: 'Checks', value: '2 passing, 1 failing, 0 pending' },
+  ])
 })
 
-test('the band says so when there is no PR or gh is unavailable', () => {
-  expect(bandText({ kind: 'none' })).toBe('no PR for this branch')
-  expect(bandText({ kind: 'unavailable' })).toBe('PR status unavailable')
+test('the pane says so when there is no PR or gh is unavailable', () => {
+  expect(paneRows({ kind: 'none' })).toEqual([{ label: 'PR', value: 'no PR for this branch' }])
+  expect(paneRows({ kind: 'unavailable' })).toEqual([{ label: 'PR', value: 'PR status unavailable' }])
+})
+
+test('before the first check the pane says so', () => {
+  expect(paneRows(null)).toEqual([{ label: 'PR', value: 'checking…' }])
 })

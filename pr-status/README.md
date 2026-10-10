@@ -1,12 +1,14 @@
 # pr-status
 
-A Claude Code mod that shows the current branch's pull request in a band above the prompt:
+A Claude Code mod that shows the current branch's pull request in a side pane:
 
 ```
-#12 Add guard · approved · checks: 2 passing, 1 failing, 0 pending
+PR       #12 Add guard
+Review   approved
+Checks   2 passing, 1 failing, 0 pending
 ```
 
-The band refreshes when a session starts and when each turn ends. It reads `gh pr view` and `gh pr checks`, so `gh` must be installed and logged in.
+The pane opens when a session starts. Reopen it with `/pr-status`. It refreshes when a session starts and when each turn ends. It reads `gh pr view` and `gh pr checks`, so `gh` must be installed and logged in.
 
 Other states:
 
@@ -16,7 +18,7 @@ Other states:
 ## Limits
 
 - Unresolved review thread counts are not shown yet. They need a GraphQL query, which this version doesn't make.
-- The band refreshes only at session start and turn end, so a PR changed from the browser shows up after the next turn.
+- The pane refreshes only at session start and turn end, so a PR changed from the browser shows up after the next turn.
 
 ## Install
 
