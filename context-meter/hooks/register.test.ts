@@ -60,3 +60,11 @@ test('pane waits for the first response', async ($, on) => {
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' } as never)
   expect(await ui.find({ type: 'Text', text: /Waiting/ })).toBeTruthy()
 })
+
+test('/context-meter brings its tab to the front', async ($, on) => {
+  stand(on)
+  const focused: string[] = []
+  on('ui.open', (_$, e) => (e.focus && focused.push(e.id), { value: { isPlaced: true } }) as never)
+  await $.command.run({ command: 'context-meter', args: '', origin: { kind: 'composer' }, presentation: { isFullscreen: true, columns: 160 } } as never)
+  expect(focused).toEqual(['context-meter'])
+})

@@ -31,7 +31,7 @@ export const register: Register = on => {
   })
 
   on('command.run', { command: 'context-meter' }, async $ => {
-    await $.ui.open({ id: PANE, title: TITLE })
+    await $.ui.open({ id: PANE, title: TITLE, focus: true })
 
     return { text: 'Context meter opened.' }
   })
