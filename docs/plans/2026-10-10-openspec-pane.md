@@ -905,7 +905,7 @@ cd ~/.claude/mods && claude plugin validate . && claude plugin validate openspec
 git grep -n -i -E "$(ls ~/workspace | paste -sd'|' -)" -- openspec-pane docs README.md .claude-plugin || echo "no real project names"
 claude plugin install openspec-pane@claude-code-mods --scope user
 ```
-Expected: validation passes, tests pass, `no real project names` (generic words such as `learning` or `experiments` matching prose must be inspected by eye), plugin installed and read from `~/.claude/mods/openspec-pane`.
+Expected: validation passes, tests pass, `no real project names` (inspect any match by eye: common words can match a folder name), plugin installed and read from `~/.claude/mods/openspec-pane`.
 
 - [ ] **Step 5: Commit and push**
 
