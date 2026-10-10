@@ -2,16 +2,25 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Reading } from '../types'
+import { budgetRow, budgetToast, overBudget, turnCost } from './cost'
 
 // Every turn re-sends the whole context, so absolute size drives cost more than percent of the window.
 const WARN_TOKENS = 100_000
 const ALERT_TOKENS = 200_000
+
+// Warn when a single turn costs at least this much (USD). Warning only, never blocks.
+const TURN_WARN_USD = 0.5
+// Off by default. Set a number to warn once when the session total reaches it.
+const SESSION_BUDGET_USD: number | undefined = undefined
 
 const PANE = 'context-meter'
 const TITLE = 'Context'
 
 const reading = atom({ plugin: 'context-meter', key: 'reading' } as const, null)
 const hasWarned = atom({ plugin: 'context-meter', key: 'hasWarned' } as const, false)
+const lastUsd = atom({ plugin: 'context-meter', key: 'lastUsd' } as const, undefined as number | undefined)
+const turnWarned = atom({ plugin: 'context-meter', key: 'turnWarned' } as const, false)
+const budgetWarned = atom({ plugin: 'context-meter', key: 'budgetWarned' } as const, false)
 
 const k = (n: number) => (n >= 1_000_000 ? `${+(n / 1_000_000).toFixed(1)}M` : `${Math.round(n / 1000)}k`)
 
@@ -38,8 +47,10 @@ export const register: Register = on => {
 
   on('session.measure', async ($, e, next) => {
     const { tokens, window, percent } = e.context
+    const usd = e.cost?.usd
+    const turn = usd === undefined ? undefined : turnCost(await read($, lastUsd), usd)
     const latest: Reading | null =
-      tokens === undefined ? null : { tokens, window, percent: percent ?? 0, usd: e.cost?.usd }
+      tokens === undefined ? null : { tokens, window, percent: percent ?? 0, usd, turnUsd: turn }
     await update($, reading, () => latest)
 
     // Toast once per crossing; compacting or clearing below the line re-arms it.
@@ -48,6 +59,24 @@ export const register: Register = on => {
       $.ui.toast(`Context is ${k(latest.tokens)} and re-sent every turn: consider /compact or /clear`)
     }
     await update($, hasWarned, () => isOver)
+
+    if (usd !== undefined) {
+      // A reading without cost leaves the baseline alone, so the next turn is measured from the last known total.
+      await update($, lastUsd, () => usd)
+
+      // Dropping back under the line re-arms the turn warning.
+      const isTurnOver = turn !== undefined && turn >= TURN_WARN_USD
+      if (isTurnOver && !(await read($, turnWarned))) {
+        $.ui.toast(`That turn cost $${turn.toFixed(2)}`)
+      }
+      await update($, turnWarned, () => isTurnOver)
+
+      // The budget warning stays set for the rest of the session.
+      if (overBudget(usd, SESSION_BUDGET_USD) && !(await read($, budgetWarned))) {
+        $.ui.toast(budgetToast(usd, SESSION_BUDGET_USD!))
+        await update($, budgetWarned, () => true)
+      }
+    }
 
     return next(e)
   })
@@ -86,6 +115,13 @@ export const register: Register = on => {
           {row('Status', status, color)}
           {row('Re-sent each turn', k(r.tokens))}
           {r.usd !== undefined && row('Session cost', `$${r.usd.toFixed(2)}`)}
+          {r.turnUsd !== undefined && (
+            <>
+              {row('Last turn', `$${r.turnUsd.toFixed(2)}`, r.turnUsd >= TURN_WARN_USD ? 'warning' : undefined)}
+              {row('Next turn ≈', `$${r.turnUsd.toFixed(2)}`)}
+            </>
+          )}
+          {r.usd !== undefined && budgetRow(r.usd, SESSION_BUDGET_USD) && row('Budget', budgetRow(r.usd, SESSION_BUDGET_USD)!)}
         </Box>
         {r.tokens >= ALERT_TOKENS && (
           <Box marginTop={1}>
