@@ -1,0 +1,10 @@
+{
+  "name": "openspec-pane",
+  "version": "0.1.0",
+  "description": "Side pane for OpenSpec: active change, artifact and task progress, spend per OPSX step, next-step buttons",
+  "author": { "name": "kk5190" },
+  "license": "MIT",
+  "homepage": "https://github.com/kk5190/claude-code-mods/tree/main/openspec-pane",
+  "repository": "https://github.com/kk5190/claude-code-mods",
+  "types": "./types/index.d.ts"
+}
