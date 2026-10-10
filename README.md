@@ -6,6 +6,7 @@ Mods for [Claude Code](https://claude.com/claude-code): small plugins that add p
 |---|---|
 | [context-meter](context-meter) | Side pane showing context size, a fill bar, status and session cost, with a nudge to `/compact` or `/clear` past 200k tokens. |
 | [dev-servers](dev-servers) | Side pane listing local dev servers (project, port, uptime) with **Open**, **Restart** and **Kill**. |
+| [openspec-pane](openspec-pane) | Side pane for [OpenSpec](https://github.com/Fission-AI/OpenSpec): active change, artifact and task progress, tokens and cost per OPSX step, and buttons for the next step. |
 
 ## Install
 
@@ -14,6 +15,7 @@ At the prompt of a Claude Code terminal session, install any mod by name:
 ```
 /plugin install context-meter --marketplace kk5190/claude-code-mods
 /plugin install dev-servers --marketplace kk5190/claude-code-mods
+/plugin install openspec-pane --marketplace kk5190/claude-code-mods
 ```
 
 Answer `y` to add the marketplace the first time, then press Enter to install at user scope.
